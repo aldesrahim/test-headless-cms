@@ -64,23 +64,6 @@ services:
         networks:
             - headless-cms-backend
 
-    # MinIO Service
-    minio:
-        image: minio/minio
-        container_name: headless-cms-minio
-        restart: unless-stopped
-        ports:
-            - "9000:9000"
-            - "9001:9001"
-        volumes:
-            - minio:/data
-        environment:
-            MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-            MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-        command: server /data --console-address ":9001"
-        networks:
-            - headless-cms-backend
-
     # MailHog Service
     mailhog:
         image: mailhog/mailhog

@@ -9,7 +9,6 @@ The application consists of the following services:
 - **Nginx Web Server**
 - **MariaDB Database**
 - **Redis** for caching
-- **MinIO** for file storage (S3-compatible)
 - **MailHog** for email testing
 
 ## Prerequisites
@@ -29,7 +28,7 @@ The application consists of the following services:
    ```bash
    cp .env.example .env
    ```
-   Edit the `.env` file with your preferred credentials (particularly database and MinIO settings).
+   Edit the `.env` file with your preferred credentials (particularly database).
 
 3. **Build and start containers**
    ```bash
@@ -67,7 +66,6 @@ The application consists of the following services:
 | Service      | URL                              | Credentials                      |
 |--------------|----------------------------------|----------------------------------|
 | Application  | http://localhost                 | N/A                              |
-| MinIO Console| http://localhost:9001            | minio / minio_secret (from .env) |
 | MailHog UI   | http://localhost:8025            | N/A                              |
 | MariaDB      | localhost:3306                   | laravel / secret (from .env)     |
 | Redis        | localhost:6379                   | N/A                              |
@@ -106,7 +104,6 @@ docker compose down -v
 3. Persistent storage is configured for:
     - Database data
     - Redis cache
-    - MinIO file storage
 
 ## Troubleshooting
 
@@ -173,7 +170,6 @@ npm i && npm run build
 1. For production deployment, you would want to:
     - Configure proper SSL certificates
     - Set up database backups
-    - Implement proper MinIO access controls
     - Use a more secure Redis configuration
 
 2. The current setup uses development-oriented configurations for easier testing.
