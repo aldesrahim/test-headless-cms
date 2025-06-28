@@ -16,7 +16,7 @@ services:
             - ./:/var/www
             - ./docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini
         networks:
-            - headless-cms-backend
+            - backend
 
     # Nginx Service
     webserver:
@@ -31,11 +31,11 @@ services:
             - ./:/var/www
             - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
         networks:
-            - headless-cms-backend
+            - backend
 
     # MariaDB Service
     mariadb:
-        image: mariadb:10.6
+        image: mariadb:latest
         container_name: headless-cms-mariadb
         restart: unless-stopped
         tty: true
@@ -50,7 +50,7 @@ services:
             MYSQL_PASSWORD: ${DB_PASSWORD}
             MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
         networks:
-            - headless-cms-backend
+            - backend
 
     # Redis Service
     redis:
@@ -62,7 +62,7 @@ services:
         volumes:
             - redis:/data
         networks:
-            - headless-cms-backend
+            - backend
 
     # MailHog Service
     mailhog:
@@ -73,11 +73,11 @@ services:
             - "1025:1025" # SMTP
             - "8025:8025" # Web UI
         networks:
-            - headless-cms-backend
+            - backend
 
 # Docker Networks
 networks:
-    headless-cms-backend:
+    backend:
         driver: bridge
 
 # Docker Volumes
