@@ -1,11 +1,18 @@
 <?php
 
+use App\Exceptions\ConstraintViolationException;
 use App\Models\Category;
 use App\Services\Categories\CategoryService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Livewire\Attributes\Computed;
 use Livewire\Volt\Component;
+use Livewire\WithPagination;
 
 new class extends Component {
+    use WithPagination;
+
+    public int $tableRecordsPerPage = 10;
+
     public string $pluralLabel;
     public string $modelLabel;
 
@@ -32,7 +39,7 @@ new class extends Component {
         return app(CategoryService::class)->find($record);
     }
 
-    public function saveRecord(): void
+    public function save(): void
     {
         if ($this->record) {
             $this->record = app(CategoryService::class)->update($this->record, $this->state);
@@ -42,24 +49,61 @@ new class extends Component {
 
         $this->dispatch('flash-alert:show', ['content' => __('labels.form.event.saved', ['label' => $this->modelLabel])]);
         $this->resetState();
+
+        $this->modal('delete-category')->close();
+        $this->modal('manage-category')->close();
     }
 
-    public function deleteRecord(): void
+    public function create(): void
     {
+        $this->resetState();
+
+        $this->modal('delete-category')->close();
+        $this->modal('manage-category')->show();
+    }
+
+    public function edit($record): void
+    {
+        $this->record = $this->resolveRecord($record);
+        $this->fillState();
+
+        $this->modal('delete-category')->close();
+        $this->modal('manage-category')->show();
+    }
+
+    public function delete($record, $confirmed = false): void
+    {
+        $this->record = $this->resolveRecord($record);
+
+        if (!$confirmed) {
+            $this->modal('delete-category')->show();
+
+            return;
+        }
+
         if (empty($this->record)) {
             throw new ModelNotFoundException;
         }
 
-        app(CategoryService::class)->delete($this->record);
+        try {
+            app(CategoryService::class)->delete($this->record);
 
-        $this->resetState();
+            $this->dispatch('flash-alert:show', ['content' => __('labels.form.event.deleted', ['label' => $this->modelLabel])]);
+            $this->resetPage();
+        } catch (ConstraintViolationException $e) {
+            $this->dispatch('flash-alert:show', ['content' => $e->getMessage()]);
+        } finally {
+            $this->resetState();
+
+            $this->modal('delete-category')->close();
+            $this->modal('manage-category')->close();
+        }
     }
 
     public function resetState(): void
     {
         $this->record = null;
         $this->fillState();
-        $this->modal('manage-category')->close();
     }
 
     public function fillState(): void
@@ -71,32 +115,77 @@ new class extends Component {
         ];
     }
 
+    #[Computed]
+    public function records()
+    {
+        $pageNumber = $this->paginators[$pageName = 'page'] ??= 1;
+
+        return app(CategoryService::class)->getPaginated([
+            'page' => [
+                'number' => $pageNumber,
+                'size' => $this->tableRecordsPerPage,
+            ],
+        ], $pageName);
+    }
+
     public function rendering(\Illuminate\View\View $view): void
     {
-        $view->title($this->pluralLabel);
+        $view->title(
+            page_title($this->pluralLabel)
+        );
     }
 }; ?>
 
 <section class="w-full">
     <x-panels.heading :heading="$pluralLabel" :subheading="__('Manage categories for posts')">
         <x-slot:action>
-            <flux:modal.trigger name="manage-category">
-                <flux:button>{{ __('labels.form.button.add', ['label' => $modelLabel]) }}</flux:button>
-            </flux:modal.trigger>
+            <flux:button wire:click="create">{{ __('labels.form.action.add', ['label' => $modelLabel]) }}</flux:button>
         </x-slot:action>
     </x-panels.heading>
 
     <div>
-        <!-- Table here -->
+        <x-table>
+            <x-slot:columns>
+                <x-table.column>Slug</x-table.column>
+                <x-table.column>Name</x-table.column>
+                <x-table.column.action/>
+            </x-slot:columns>
+
+            <x-slot:rows>
+                @foreach($this->records as $record)
+                    <x-table.row>
+                        <x-table.cell>{{ $record->slug }}</x-table.cell>
+                        <x-table.cell>{{ $record->name }}</x-table.cell>
+                        <x-table.cell>
+                            <flux:button.group>
+                                <flux:button variant="outline" size="sm" wire:click="edit({{ $record->id }})">
+                                    {{ __('labels.form.action.edit') }}
+                                </flux:button>
+                                <flux:button variant="danger" size="sm" wire:click="delete({{ $record->id }})">
+                                    {{ __('labels.form.action.delete') }}
+                                </flux:button>
+                            </flux:button.group>
+                        </x-table.cell>
+                    </x-table.row>
+                @endforeach
+            </x-slot:rows>
+
+            <x-slot:pagination>
+                <x-table.pagination
+                    :paginator="$this->records"
+                    :page-options="[10, 15, 20, 50]"
+                />
+            </x-slot:pagination>
+        </x-table>
     </div>
 
     <flux:modal name="manage-category" class="md:w-96">
-        <form wire:submit.prevent="saveRecord">
+        <form wire:submit.prevent="save">
             <div class="space-y-6">
                 <div>
                     <flux:heading size="lg">
-                        @if (isset($record))
-                            {{ __('labels.panel.heading.edit', ['label' => $modelLabel]) }}
+                        @if (filled($record))
+                            {{ __('labels.panel.heading.edit', ['label' => $record?->name]) }}
                         @else
                             {{ __('labels.panel.heading.create', ['label' => $modelLabel]) }}
                         @endif
@@ -111,24 +200,34 @@ new class extends Component {
                 <div class="flex">
                     <flux:spacer/>
 
-                    <div class="space-x">
+                    <div class="space-x-2">
                         <flux:button type="submit" variant="primary">
-                            {{ __('labels.form.button.save') }}
+                            {{ __('labels.form.action.save') }}
                         </flux:button>
-
-                        @isset($record)
-                            <flux:button
-                                type="button"
-                                variant="danger"
-                                wire:click="deleteRecord"
-                                :wire:confirm="__('This action can not be undone, continue?')"
-                            >
-                                {{ __('labels.form.button.delete') }}
-                            </flux:button>
-                        @endisset
                     </div>
                 </div>
             </div>
         </form>
+    </flux:modal>
+
+    <flux:modal name="delete-category" class="min-w-[22rem]">
+        <div class="space-y-6">
+            <div>
+                <flux:heading
+                    size="lg">{{ __('labels.panel.heading.delete', ['label' => $record?->name]) }}</flux:heading>
+                <flux:text class="mt-2">
+                    <p>{{ __('labels.form.helper.delete.warn') }}</p>
+                </flux:text>
+            </div>
+            <div class="flex gap-2">
+                <flux:spacer/>
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancel</flux:button>
+                </flux:modal.close>
+                <flux:button type="button" wire:click="delete({{ $record?->id }}, 1)" variant="danger">
+                    {{ __('labels.form.action.delete') }}
+                </flux:button>
+            </div>
+        </div>
     </flux:modal>
 </section>

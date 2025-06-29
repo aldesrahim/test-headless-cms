@@ -2,15 +2,21 @@
 
 return [
     'form' => [
-        'button' => [
+        'action' => [
             'add' => 'Add :label',
             'save' => 'Save',
             'cancel' => 'Cancel',
             'delete' => 'Delete',
+            'edit' => 'Edit',
         ],
         'event' => [
             'saved' => ':label successfully saved',
             'deleted' => ':label successfully deleted',
+        ],
+        'helper' => [
+            'delete' => [
+                'warn' => 'This action cannot be reversed.',
+            ],
         ],
     ],
     'panel' => [
@@ -24,5 +30,8 @@ return [
         'categories' => [
             'plural' => 'Categories',
         ],
+    ],
+    'pagination' => [
+        'overview' => '{1} Showing 1 result|[2,*] Showing :first to :last of :total results',
     ],
 ];
