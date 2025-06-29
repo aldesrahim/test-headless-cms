@@ -58,8 +58,8 @@ new class extends Component {
     {
         $this->resetState();
 
-        $this->modal('delete-category')->close();
         $this->modal('manage-category')->show();
+        $this->modal('delete-category')->close();
     }
 
     public function edit($record): void
@@ -71,11 +71,10 @@ new class extends Component {
         $this->modal('manage-category')->show();
     }
 
-    public function delete($record, $confirmed = false): void
+    public function delete($record = null): void
     {
-        $this->record = $this->resolveRecord($record);
-
-        if (!$confirmed) {
+        if ($record) {
+            $this->record = $this->resolveRecord($record);
             $this->modal('delete-category')->show();
 
             return;
@@ -139,7 +138,9 @@ new class extends Component {
 <section class="w-full">
     <x-panels.heading :heading="$pluralLabel" :subheading="__('Manage categories for posts')">
         <x-slot:action>
-            <flux:button wire:click="create">{{ __('labels.form.action.add', ['label' => $modelLabel]) }}</flux:button>
+            <flux:button type="button" wire:click="create">
+                {{ __('labels.form.action.add', ['label' => $modelLabel]) }}
+            </flux:button>
         </x-slot:action>
     </x-panels.heading>
 
@@ -152,16 +153,26 @@ new class extends Component {
             </x-slot:columns>
 
             <x-slot:rows>
-                @foreach($this->records as $record)
+                @foreach($this->records as $recordItem)
                     <x-table.row>
-                        <x-table.cell>{{ $record->slug }}</x-table.cell>
-                        <x-table.cell>{{ $record->name }}</x-table.cell>
+                        <x-table.cell>{{ $recordItem->slug }}</x-table.cell>
+                        <x-table.cell>{{ $recordItem->name }}</x-table.cell>
                         <x-table.cell>
                             <flux:button.group>
-                                <flux:button variant="outline" size="sm" wire:click="edit({{ $record->id }})">
+                                <flux:button
+                                    variant="outline"
+                                    size="sm"
+                                    wire:click="edit({{ $recordItem->id }})"
+                                    wire:key="table.action.edit.{{ $recordItem->id }}"
+                                >
                                     {{ __('labels.form.action.edit') }}
                                 </flux:button>
-                                <flux:button variant="danger" size="sm" wire:click="delete({{ $record->id }})">
+                                <flux:button
+                                    variant="danger"
+                                    size="sm"
+                                    wire:click="delete({{ $recordItem->id }})"
+                                    wire:key="table.action.delete.{{ $recordItem->id }}"
+                                >
                                     {{ __('labels.form.action.delete') }}
                                 </flux:button>
                             </flux:button.group>
@@ -224,7 +235,7 @@ new class extends Component {
                 <flux:modal.close>
                     <flux:button variant="ghost">Cancel</flux:button>
                 </flux:modal.close>
-                <flux:button type="button" wire:click="delete({{ $record?->id }}, 1)" variant="danger">
+                <flux:button type="button" wire:click="delete" variant="danger">
                     {{ __('labels.form.action.delete') }}
                 </flux:button>
             </div>
