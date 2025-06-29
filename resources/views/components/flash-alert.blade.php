@@ -16,15 +16,17 @@
                     content = detail;
                 }
 
-                if (!this.alert) {
-                    this.alert = {
-                        content,
-                        duration: duration ?? 5000,
-                        timeout: null,
-                    };
-
-                    this.show();
+                if (this.alert) {
+                    this.hide();
                 }
+
+                this.alert = {
+                    content,
+                    duration: duration ?? 5000,
+                    timeout: null,
+                };
+
+                this.show();
             });
         },
         show() {
@@ -50,11 +52,11 @@
     }"
 >
     <div
-        class="flex mb-5 pl-5 pr-3 py-2 items-center rounded space-x-2 [print-color-adjust:exact] bg-zinc-800/5 dark:bg-white/10"
+        class="flex mb-5 p-5 items-center rounded space-x-2 [print-color-adjust:exact] bg-zinc-800/5 dark:bg-white/10"
         x-cloak
         x-show="isShow"
     >
         <span class="grow" x-text="alert?.content"></span>
-        <flux:button icon="x-mark" variant="subtle" @click="hide()" />
+        <flux:button icon="x-mark" variant="subtle" :inset="true" @click="hide()" />
     </div>
 </div>
