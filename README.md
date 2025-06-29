@@ -1,10 +1,13 @@
 # Headless CMS - Palm Code Tech Test
 
-This is a Laravel-based Headless CMS implementation as part of the technical assessment for [Palm Code](https://palm-co.de). The application is containerized using Docker with a complete development environment.
+This is a Laravel-based Headless CMS implementation as part of the technical assessment
+for [Palm Code](https://palm-co.de). The application is containerized using Docker with a complete development
+environment.
 
 ## System Architecture
 
 The application consists of the following services:
+
 - **Laravel Application** (PHP-FPM 8.3)
 - **Nginx Web Server**
 - **MariaDB Database**
@@ -41,38 +44,44 @@ The application consists of the following services:
     docker compose exec --user=headless-cms -it app bash
     ```
 
-4. **Install dependencies**
+5. **Install dependencies**
    ```bash
    composer install
    ```
 
-5. **Install Node.js dependencies**
+6. **Install Node.js dependencies**
    ```bash
    npm i && npm run build
    ```
 
-6. **Generate application key**
+7. **Generate application key**
    ```bash
    php artisan key:generate
    ```
 
-7. **Run database migrations and seeders**
+8. **Run database migrations and seeders**
    ```bash
    php artisan migrate --seed
    ```
 
+9. **Run public storage link**
+   ```bash
+   php artisan storage:link
+   ```
+
 ## Access Services
 
-| Service      | URL                              | Credentials                      |
-|--------------|----------------------------------|----------------------------------|
-| Application  | http://localhost                 | N/A                              |
-| MailHog UI   | http://localhost:8025            | N/A                              |
-| MariaDB      | localhost:3306                   | laravel / secret (from .env)     |
-| Redis        | localhost:6379                   | N/A                              |
+| Service     | URL                   | Credentials                  |
+|-------------|-----------------------|------------------------------|
+| Application | http://localhost      | N/A                          |
+| MailHog UI  | http://localhost:8025 | N/A                          |
+| MariaDB     | localhost:3306        | laravel / secret (from .env) |
+| Redis       | localhost:6379        | N/A                          |
 
 ## Development Workflow
 
 **Viewing Logs:**
+
 ```bash
 docker compose logs [service_name]  # e.g., app, webserver, mariadb
 ```
@@ -80,6 +89,7 @@ docker compose logs [service_name]  # e.g., app, webserver, mariadb
 ## Configuration Files
 
 Key configuration files:
+
 - `docker compose.yml` - Main service definitions
 - `docker/nginx/default.conf` - Nginx server configuration
 - `docker/php/Dockerfile` - PHP-FPM image configuration
@@ -88,11 +98,13 @@ Key configuration files:
 ## Stopping the Environment
 
 To stop all services:
+
 ```bash
 docker compose down
 ```
 
 To stop and remove all data volumes (warning: this will delete your database):
+
 ```bash
 docker compose down -v
 ```
@@ -110,6 +122,7 @@ docker compose down -v
 **Port conflicts:** Ensure ports 80, 3306, 6379, 9000-9001, and 8025 are available.
 
 **Permission issues:** If you encounter file permission problems:
+
 ```bash
 docker compose exec app chown -R www-data:www-data /var/www/storage
 ```
@@ -117,45 +130,47 @@ docker compose exec app chown -R www-data:www-data /var/www/storage
 **If permission issues persist:** This is often caused by user ID mismatches between host and container.
 
 1. Check your current user's ID:
-```bash
-id -u
-```
+    ```bash
+    id -u
+    ```
 
 2. Note the numeric user ID displayed (e.g., `1000`)
 
 3. Update the `uid` argument in your `docker compose.yml` (in the `app` service build section):
-```yaml
-build:
-  context: .
-  dockerfile: docker/php/Dockerfile
-  args:
-    user: headless-cms
-    uid: 1000  # Update this value with your host user ID
-```
+    ```yaml
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        user: headless-cms
+        uid: 1000  # Update this value with your host user ID
+    ```
 
 4. Rebuild and restart the containers:
-```bash
-# Stop existing containers
-docker compose down
-
-# Rebuild with updated UID
-docker compose build --no-cache app
-
-# Start fresh containers
-docker compose up -d
-```
+    ```bash
+    # Stop existing containers
+    docker compose down
+    
+    # Rebuild with updated UID
+    docker compose build --no-cache app
+    
+    # Start fresh containers
+    docker compose up -d
+    ```
 
 5. Verify file permissions:
-```bash
-docker compose exec app ls -la /var/www/storage
-```
+    ```bash
+    docker compose exec app ls -la /var/www/storage
+    ```
 
 **Service not responding:** Check container status:
+
 ```bash
 docker compose ps
 ```
 
 **Node.js/npm issues:** If frontend dependencies fail:
+
 ```bash
 # Attach to app container
 docker compose exec --user=headless-cms -it app bash
