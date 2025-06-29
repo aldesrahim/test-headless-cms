@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->longText('body');
             $table->unsignedTinyInteger('status')->default(0);
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });
     }
