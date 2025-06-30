@@ -19,15 +19,10 @@ new class extends Component {
     public ?Category $record = null;
     public array $state = [];
 
-    public function mount($record = null)
+    public function mount(): void
     {
         $this->pluralLabel = __('labels.menu.categories.plural');
         $this->modelLabel = str($this->pluralLabel)->singular();
-
-        if ($record) {
-            $this->record = $this->resolveRecord($record);
-            $this->fillState();
-        }
     }
 
     public function resolveRecord($record): Category
