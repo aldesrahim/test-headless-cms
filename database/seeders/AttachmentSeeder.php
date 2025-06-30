@@ -19,18 +19,18 @@ class AttachmentSeeder extends Seeder
         $this->createTargetDirectory();
         $this->emptyTargetDirectory();
 
-        $disk = Storage::disk('public');
+        $disk = config('filesystems.default');
         $files = File::files(__DIR__.'/resources/attachments');
 
         $attachments = [];
 
         foreach ($files as $file) {
             $attachments[] = [
-                'disk' => 'public',
-                'path' => $path = $disk->putFile(self::TARGET_DIR, $file->getPathname()),
+                'disk' => $disk,
+                'path' => Storage::putFile(self::TARGET_DIR, $path = $file->getPathname()),
                 'filename' => $file->getFilename(),
                 'size' => $file->getSize(),
-                'mime_type' => $disk->mimeType($path),
+                'mime_type' => File::mimeType($path),
                 'extension' => $file->getExtension(),
             ];
         }
@@ -42,20 +42,17 @@ class AttachmentSeeder extends Seeder
 
     protected function createTargetDirectory(): void
     {
-        $disk = Storage::disk('public');
-
-        if (! $disk->exists(self::TARGET_DIR)) {
-            $disk->makeDirectory(self::TARGET_DIR);
+        if (! Storage::exists(self::TARGET_DIR)) {
+            Storage::makeDirectory(self::TARGET_DIR);
         }
     }
 
     protected function emptyTargetDirectory(): void
     {
-        $disk = Storage::disk('public');
-        $files = $disk->files(self::TARGET_DIR);
+        $files = Storage::files(self::TARGET_DIR);
 
         foreach ($files as $file) {
-            $disk->delete($file);
+            Storage::delete($file);
         }
     }
 }
