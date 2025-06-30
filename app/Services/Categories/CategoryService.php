@@ -49,7 +49,13 @@ class CategoryService
         $validated = Validator::validate($params, [
             'page.size' => ['nullable', 'numeric'],
             'page.number' => ['nullable', 'numeric', 'min:1'],
-            'sort.by' => ['nullable', 'string', Rule::in(['id', 'slug', 'name', 'created_at', 'updated_at'])],
+            'sort.by' => ['nullable', 'string', Rule::in([
+                'id',
+                'slug',
+                'name',
+                'created_at',
+                'updated_at',
+            ])],
             'sort.direction' => ['nullable', 'in:asc,desc'],
             'search' => ['nullable', 'string'],
         ]);
@@ -70,7 +76,6 @@ class CategoryService
                 perPage: $validated['page']['size'] ?? 10,
                 pageName: $pageName,
                 page: $validated['page']['number'] ?? 1,
-                total: $baseQuery->toBase()->getCountForPagination(),
             )
             ->onEachSide(0);
     }
