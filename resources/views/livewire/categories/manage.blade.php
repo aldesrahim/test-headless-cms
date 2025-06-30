@@ -199,8 +199,7 @@ new class extends Component {
                 </div>
 
                 <div class="space-y-2">
-                    <flux:input label="Name" wire:model="state.name" placeholder="Tech, News, Laravel, etc"/>
-                    @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                    <flux:input label="Name" wire:model="state.name" name="name" placeholder="Tech, News, Laravel, etc"/>
                 </div>
 
                 <div class="flex">
