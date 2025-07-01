@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('model_has_attachments', function (Blueprint $table) {
+        Schema::create('attachment_has_model', function (Blueprint $table) {
             $table->id();
-            $table->morphs('model');
             $table->foreignId('attachment_id')->constrained()->cascadeOnDelete();
+            $table->morphs('model');
             $table->string('key')->nullable();
             $table->nullableMorphs('subject');
             $table->timestamps();
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('model_has_attachments');
+        Schema::dropIfExists('attachment_has_model');
     }
 };
