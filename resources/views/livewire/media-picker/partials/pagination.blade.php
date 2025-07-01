@@ -5,8 +5,9 @@
 
 @php
     use Illuminate\Contracts\Pagination\CursorPaginator;
+    use Illuminate\Pagination\LengthAwarePaginator;
 
-    $isSimple = ! $paginator instanceof \Illuminate\Pagination\LengthAwarePaginator;
+    $isSimple = ! $paginator instanceof LengthAwarePaginator;
 @endphp
 
 <nav {{ $attributes->merge(['class' => 'grid grid-cols-2 items-center gap-x-3']) }}>
