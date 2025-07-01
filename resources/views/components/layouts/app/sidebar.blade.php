@@ -47,6 +47,15 @@
                     >
                         {{ __('labels.menu.posts.plural') }}
                     </flux:navlist.item>
+
+                    <flux:navlist.item
+                        icon="document-duplicate"
+                        :href="route('pages.index')"
+                        :current="request()->routeIs('pages.*')"
+                        wire:navigate
+                    >
+                        {{ __('labels.menu.pages.plural') }}
+                    </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

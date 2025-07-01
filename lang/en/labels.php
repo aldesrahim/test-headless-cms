@@ -33,6 +33,9 @@ return [
         'posts' => [
             'plural' => 'Posts',
         ],
+        'pages' => [
+            'plural' => 'Pages',
+        ],
     ],
     'pagination' => [
         'overview' => '{1} Showing 1 result|[2,*] Showing :first to :last of :total results',

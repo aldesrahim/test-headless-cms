@@ -18,6 +18,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Volt::route('/create', 'posts.create')->name('create');
         Volt::route('/{record}/edit', 'posts.edit')->name('edit');
     });
+    Route::group([
+        'prefix' => 'pages',
+        'as' => 'pages.',
+    ], function () {
+        Volt::route('/', 'pages.lists')->name('index');
+        Volt::route('/create', 'pages.create')->name('create');
+        Volt::route('/{record}/edit', 'pages.edit')->name('edit');
+    });
 });
 
 Route::middleware(['auth'])->group(function () {
