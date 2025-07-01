@@ -10,6 +10,14 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
     Volt::route('categories', 'categories.manage')->name('categories');
+    Route::group([
+        'prefix' => 'posts',
+        'as' => 'posts.',
+    ], function () {
+        Volt::route('/', 'posts.lists')->name('index');
+        Volt::route('/create', 'posts.create')->name('create');
+        Volt::route('/{record}/edit', 'posts.edit')->name('edit');
+    });
 });
 
 Route::middleware(['auth'])->group(function () {

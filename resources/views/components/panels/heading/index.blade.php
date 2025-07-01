@@ -13,7 +13,7 @@
             @endisset
         </dvi>
         @isset($action)
-            <div class="flex-none">
+            <div class="flex flex-none gap-2">
                 {{ $action }}
             </div>
         @endisset

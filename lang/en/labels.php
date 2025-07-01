@@ -30,8 +30,30 @@ return [
         'categories' => [
             'plural' => 'Categories',
         ],
+        'posts' => [
+            'plural' => 'Posts',
+        ],
     ],
     'pagination' => [
         'overview' => '{1} Showing 1 result|[2,*] Showing :first to :last of :total results',
+    ],
+    'fields' => [
+        'markdown_editor' => [
+            'toolbar_buttons' => [
+                'attach_files' => 'Attach files',
+                'blockquote' => 'Blockquote',
+                'bold' => 'Bold',
+                'bullet_list' => 'Bullet list',
+                'code_block' => 'Code block',
+                'heading' => 'Heading',
+                'italic' => 'Italic',
+                'link' => 'Link',
+                'ordered_list' => 'Numbered list',
+                'redo' => 'Redo',
+                'strike' => 'Strikethrough',
+                'table' => 'Table',
+                'undo' => 'Undo',
+            ],
+        ],
     ],
 ];

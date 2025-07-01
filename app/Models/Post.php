@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasAttachments;
+use App\Services\Posts\Enums\Status;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -23,6 +24,25 @@ class Post extends Model
         'status',
         'published_at',
     ];
+
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
+
+    public function isPublished(): bool
+    {
+        return filled($this->published_at);
+    }
+
+    public function markAsPublished(): bool
+    {
+        return $this->update(['published_at' => now(), 'status' => Status::Published]);
+    }
+
+    public function markAsDraft(): bool
+    {
+        return $this->update(['published_at' => null, 'status' => Status::Draft]);
+    }
 
     public function getSlugOptions(): SlugOptions
     {
