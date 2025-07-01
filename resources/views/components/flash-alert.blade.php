@@ -3,56 +3,58 @@
         isShow: false,
         alert: null,
         init() {
-            window.addEventListener('flash-alert:show', event => {
-                const detail = Array.isArray(event.detail) ? event.detail[0] : event.detail;
+            window.addEventListener('flash-alert:show', (event) => {
+                const detail = Array.isArray(event.detail)
+                    ? event.detail[0]
+                    : event.detail
 
-                let content = null;
-                let duration = null;
+                let content = null
+                let duration = null
 
                 if (typeof detail === 'object') {
-                    content = detail.content;
-                    duration = detail.duration ?? null;
+                    content = detail.content
+                    duration = detail.duration ?? null
                 } else {
-                    content = detail;
+                    content = detail
                 }
 
                 if (this.alert) {
-                    this.hide();
+                    this.hide()
                 }
 
                 this.alert = {
                     content,
                     duration: duration ?? 5000,
                     timeout: null,
-                };
+                }
 
-                this.show();
-            });
+                this.show()
+            })
         },
         show() {
-            if (!this.alert) {
-                return;
+            if (! this.alert) {
+                return
             }
 
-            this.isShow = true;
+            this.isShow = true
 
             this.alert.timeout = setTimeout(() => {
-                this.hide();
-            }, this.alert.duration);
+                this.hide()
+            }, this.alert.duration)
         },
         hide() {
-            this.isShow = false;
+            this.isShow = false
 
             if (this.alert != null) {
-                clearTimeout(this.alert.timeout);
+                clearTimeout(this.alert.timeout)
             }
 
-            this.alert = null;
-        }
+            this.alert = null
+        },
     }"
 >
     <div
-        class="flex mb-5 p-5 items-center rounded space-x-2 [print-color-adjust:exact] bg-zinc-800/5 dark:bg-white/10"
+        class="mb-5 flex items-center space-x-2 rounded bg-zinc-800/5 p-5 [print-color-adjust:exact] dark:bg-white/10"
         x-cloak
         x-show="isShow"
     >

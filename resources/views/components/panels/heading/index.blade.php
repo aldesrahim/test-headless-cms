@@ -8,7 +8,9 @@
     <div class="flex">
         <dvi class="grow">
             <flux:heading size="xl" level="1">{{ $heading }}</flux:heading>
-            @isset($heading) <flux:subheading size="lg" class="mb-6">{{ $subheading }}</flux:subheading> @endisset
+            @isset($heading)
+                <flux:subheading size="lg" class="mb-6">{{ $subheading }}</flux:subheading>
+            @endisset
         </dvi>
         @isset($action)
             <div class="flex-none">

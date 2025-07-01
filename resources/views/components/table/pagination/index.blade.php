@@ -2,6 +2,7 @@
     'currentPageOptionProperty' => 'tableRecordsPerPage',
     'paginator',
     'pageOptions' => [],
+    
 ])
 
 @php
@@ -11,7 +12,7 @@
 @endphp
 
 <nav {{ $attributes->merge(['class' => 'grid grid-cols-[1fr_auto_1fr] items-center gap-x-3 p-4']) }}>
-    @if (!$paginator->onFirstPage())
+    @if (! $paginator->onFirstPage())
         @php
             if ($paginator instanceof CursorPaginator) {
                 $wireClickAction = "setPage('{$paginator->previousCursor()->encode()}', '{$paginator->getCursorName()}')";
@@ -23,25 +24,21 @@
         <flux:button
             :wire:click="$wireClickAction"
             :wire:key="$this->getId() . '.pagination.previous'"
-            class="md:hidden justify-self-start"
+            class="justify-self-start md:hidden"
             size="sm"
         >
             Previous
         </flux:button>
     @endif
 
-    @if (!$isSimple)
-        <div class="hidden md:block text-zinc-500 dark:text-zinc-400 text-sm font-medium whitespace-nowrap">
+    @if (! $isSimple)
+        <div class="hidden text-sm font-medium whitespace-nowrap text-zinc-500 md:block dark:text-zinc-400">
             {{
-                trans_choice(
-                    'labels.pagination.overview',
-                    $paginator->total(),
-                    [
-                        'first' => \Illuminate\Support\Number::format($paginator->firstItem() ?? 0),
-                        'last' => \Illuminate\Support\Number::format($paginator->lastItem() ?? 0),
-                        'total' => \Illuminate\Support\Number::format($paginator->total()),
-                    ],
-                )
+                trans_choice('labels.pagination.overview', $paginator->total(), [
+                    'first' => \Illuminate\Support\Number::format($paginator->firstItem() ?? 0),
+                    'last' => \Illuminate\Support\Number::format($paginator->lastItem() ?? 0),
+                    'total' => \Illuminate\Support\Number::format($paginator->total()),
+                ])
             }}
         </div>
     @endif
@@ -70,15 +67,15 @@
         <flux:button
             :wire:click="$wireClickAction"
             :wire:key="$this->getId() . '.pagination.next'"
-            class="md:hidden col-start-3 justify-self-end"
+            class="col-start-3 justify-self-end md:hidden"
             size="sm"
         >
             Next
         </flux:button>
     @endif
 
-    @if ((! $isSimple) && $paginator->hasPages())
-        <div class="hidden md:flex justify-self-end">
+    @if (! $isSimple && $paginator->hasPages())
+        <div class="hidden justify-self-end md:flex">
             <flux:button.group>
                 @if (! $paginator->onFirstPage())
                     <flux:button
@@ -89,7 +86,7 @@
                     />
                 @endif
 
-                @foreach($paginator->render()->offsetGet('elements') as $element)
+                @foreach ($paginator->render()->offsetGet('elements') as $element)
                     @if (is_string($element))
                         <flux:button disabled size="sm">{{ $element }}</flux:button>
                     @endif

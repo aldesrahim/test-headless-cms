@@ -42,7 +42,9 @@ new class extends Component {
             $this->record = app(CategoryService::class)->create($this->state);
         }
 
-        $this->dispatch('flash-alert:show', ['content' => __('labels.form.event.saved', ['label' => $this->modelLabel])]);
+        $this->dispatch('flash-alert:show', [
+            'content' => __('labels.form.event.saved', ['label' => $this->modelLabel]),
+        ]);
         $this->resetState();
 
         $this->modal('delete-category')->close();
@@ -76,13 +78,15 @@ new class extends Component {
         }
 
         if (empty($this->record)) {
-            throw new ModelNotFoundException;
+            throw new ModelNotFoundException();
         }
 
         try {
             app(CategoryService::class)->delete($this->record);
 
-            $this->dispatch('flash-alert:show', ['content' => __('labels.form.event.deleted', ['label' => $this->modelLabel])]);
+            $this->dispatch('flash-alert:show', [
+                'content' => __('labels.form.event.deleted', ['label' => $this->modelLabel]),
+            ]);
             $this->resetPage();
         } catch (ConstraintViolationException $e) {
             $this->dispatch('flash-alert:show', ['content' => $e->getMessage()]);
@@ -112,21 +116,22 @@ new class extends Component {
     #[Computed]
     public function records()
     {
-        $pageNumber = $this->paginators[$pageName = 'page'] ??= 1;
+        $pageNumber = $this->paginators[($pageName = 'page')] ??= 1;
 
-        return app(CategoryService::class)->getPaginated([
-            'page' => [
-                'number' => $pageNumber,
-                'size' => $this->tableRecordsPerPage,
+        return app(CategoryService::class)->getPaginated(
+            [
+                'page' => [
+                    'number' => $pageNumber,
+                    'size' => $this->tableRecordsPerPage,
+                ],
             ],
-        ], $pageName);
+            $pageName,
+        );
     }
 
     public function rendering(\Illuminate\View\View $view): void
     {
-        $view->title(
-            page_title($this->pluralLabel)
-        );
+        $view->title(page_title($this->pluralLabel));
     }
 }; ?>
 
@@ -136,7 +141,7 @@ new class extends Component {
             <flux:button type="button" wire:click="create">
                 {{ __('labels.form.action.add', ['label' => $modelLabel]) }}
             </flux:button>
-        </x-slot:action>
+        </x-slot>
     </x-panels.heading>
 
     <div>
@@ -144,11 +149,11 @@ new class extends Component {
             <x-slot:columns>
                 <x-table.column>Slug</x-table.column>
                 <x-table.column>Name</x-table.column>
-                <x-table.column.action/>
-            </x-slot:columns>
+                <x-table.column.action />
+            </x-slot>
 
             <x-slot:rows>
-                @foreach($this->records as $recordItem)
+                @foreach ($this->records as $recordItem)
                     <x-table.row>
                         <x-table.cell>{{ $recordItem->slug }}</x-table.cell>
                         <x-table.cell>{{ $recordItem->name }}</x-table.cell>
@@ -174,14 +179,11 @@ new class extends Component {
                         </x-table.cell>
                     </x-table.row>
                 @endforeach
-            </x-slot:rows>
+            </x-slot>
 
             <x-slot:pagination>
-                <x-table.pagination
-                    :paginator="$this->records"
-                    :page-options="[10, 15, 20, 50]"
-                />
-            </x-slot:pagination>
+                <x-table.pagination :paginator="$this->records" :page-options="[10, 15, 20, 50]" />
+            </x-slot>
         </x-table>
     </div>
 
@@ -199,11 +201,16 @@ new class extends Component {
                 </div>
 
                 <div class="space-y-2">
-                    <flux:input label="Name" wire:model="state.name" name="name" placeholder="Tech, News, Laravel, etc"/>
+                    <flux:input
+                        label="Name"
+                        wire:model="state.name"
+                        name="name"
+                        placeholder="Tech, News, Laravel, etc"
+                    />
                 </div>
 
                 <div class="flex">
-                    <flux:spacer/>
+                    <flux:spacer />
 
                     <div class="space-x-2">
                         <flux:button type="submit" variant="primary">
@@ -218,14 +225,15 @@ new class extends Component {
     <flux:modal name="delete-category" class="min-w-[22rem]">
         <div class="space-y-6">
             <div>
-                <flux:heading
-                    size="lg">{{ __('labels.panel.heading.delete', ['label' => $record?->name]) }}</flux:heading>
+                <flux:heading size="lg">
+                    {{ __('labels.panel.heading.delete', ['label' => $record?->name]) }}
+                </flux:heading>
                 <flux:text class="mt-2">
                     <p>{{ __('labels.form.helper.delete.warn') }}</p>
                 </flux:text>
             </div>
             <div class="flex gap-2">
-                <flux:spacer/>
+                <flux:spacer />
                 <flux:modal.close>
                     <flux:button variant="ghost">Cancel</flux:button>
                 </flux:modal.close>
