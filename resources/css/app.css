@@ -63,6 +63,4 @@ select:focus[data-flux-control] {
     @apply ring-accent ring-offset-accent-foreground ring-2 ring-offset-2 outline-hidden;
 }
 
-/* \[:where(&)\]:size-4 {
-    @apply size-4;
-} */
+[x-cloak] { display: none !important; }
