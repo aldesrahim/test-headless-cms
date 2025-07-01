@@ -10,9 +10,12 @@ use Exception;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class PostService
 {
@@ -20,6 +23,9 @@ class PostService
 
     public const IMAGE_MAX_SIZE = 5120; // 5MB
 
+    /**
+     * @throws Throwable
+     */
     protected function save(array $validated, ?Post $post = null, ?Model $subject = null)
     {
         return DB::transaction(function () use ($validated, $post, $subject) {
@@ -52,6 +58,10 @@ class PostService
         });
     }
 
+    /**
+     * @throws ValidationException
+     * @throws Throwable
+     */
     public function create(array $payload, ?Model $subject = null): Post
     {
         $validated = Validator::validate($payload, [
@@ -70,6 +80,10 @@ class PostService
         return $this->save($validated, subject: $subject);
     }
 
+    /**
+     * @throws ValidationException
+     * @throws Throwable
+     */
     public function update(Post $post, array $payload, ?Model $subject = null): Post
     {
         $validated = Validator::validate($payload, [
@@ -88,6 +102,10 @@ class PostService
         return $this->save($validated, $post, $subject);
     }
 
+    /**
+     * @throws ValidationException
+     * @throws Throwable
+     */
     public function delete(Post $post): bool
     {
         if ($post->isPublished()) {
@@ -101,11 +119,18 @@ class PostService
         });
     }
 
+    /**
+     * @throws ModelNotFoundException
+     */
     public function find($key): Post
     {
         return Post::findOrFail($key);
     }
 
+    /**
+     * @throws ValidationException
+     * @throws Throwable
+     */
     public function getPaginated(array $params = [], string $pageName = 'page'): Paginator
     {
         $validated = Validator::validate($params, [
@@ -124,7 +149,7 @@ class PostService
             'search' => ['nullable', 'string'],
         ]);
 
-        $baseQuery = Post::query()
+        return Post::query()
             ->when(
                 $validated['sort']['by'] ?? null,
                 fn (Builder $query, $value) => $query->orderBy($value, $validated['sort']['direction'] ?? 'asc')
@@ -136,9 +161,7 @@ class PostService
                     'title',
                     'excerpt',
                 ], 'like', "%$value")
-            );
-
-        return $baseQuery
+            )
             ->paginate(
                 perPage: $validated['page']['size'] ?? 10,
                 pageName: $pageName,
