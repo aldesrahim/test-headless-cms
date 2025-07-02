@@ -46,7 +46,7 @@ new class extends Component {
 <section class="w-full">
     <x-panels.heading :heading="$pluralLabel" :subheading="__('Manage and publish pages')">
         <x-slot:action>
-            <flux:button href="{{ route('pages.create') }}" type="button" wire:click="create">
+            <flux:button href="{{ route('pages.create') }}" type="button">
                 {{ __('labels.form.action.add', ['label' => $modelLabel]) }}
             </flux:button>
         </x-slot>
