@@ -54,7 +54,7 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         return response()->json([
-            'message' => __('api.general.get.success'),
+            'message' => __('api.general.show.success'),
             'data' => $category,
         ]);
     }
@@ -87,9 +87,10 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         try {
+            $this->service->delete($category);
+
             return response()->json([
                 'message' => __('api.general.delete.success'),
-                'data' => $this->service->delete($category),
             ]);
         } catch (Throwable $exception) {
             return response()->json([

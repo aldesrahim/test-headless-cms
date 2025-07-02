@@ -54,7 +54,7 @@ class PageController extends Controller
     public function show(Page $page)
     {
         return response()->json([
-            'message' => __('api.general.get.success'),
+            'message' => __('api.general.show.success'),
             'data' => $page,
         ]);
     }
@@ -87,9 +87,10 @@ class PageController extends Controller
     public function destroy(Page $page)
     {
         try {
+            $this->service->delete($page);
+
             return response()->json([
                 'message' => __('api.general.delete.success'),
-                'data' => $this->service->delete($page),
             ]);
         } catch (Throwable $exception) {
             return response()->json([

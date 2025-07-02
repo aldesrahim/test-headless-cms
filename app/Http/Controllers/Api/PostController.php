@@ -54,7 +54,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
         return response()->json([
-            'message' => __('api.general.get.success'),
+            'message' => __('api.general.show.success'),
             'data' => $post,
         ]);
     }
@@ -87,9 +87,10 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         try {
+            $this->service->delete($post);
+
             return response()->json([
                 'message' => __('api.general.delete.success'),
-                'data' => $this->service->delete($post),
             ]);
         } catch (Throwable $exception) {
             return response()->json([
