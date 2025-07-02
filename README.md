@@ -4,6 +4,8 @@ This is a Laravel-based Headless CMS implementation as part of the technical ass
 for [Palm Code](https://palm-co.de). The application is containerized using Docker with a complete development
 environment.
 
+API Documentation: [Postman Collection](https://www.postman.com/aldesrahim/workspace/public-workspace/collection/5821447-d247d8a8-5901-4e73-a42f-b64362ec669b?action=share&creator=5821447)
+
 ## System Architecture
 
 The application consists of the following services:
@@ -77,6 +79,12 @@ The application consists of the following services:
 | MailHog UI  | http://localhost:8025 | N/A                          |
 | MariaDB     | localhost:3306        | laravel / secret (from .env) |
 | Redis       | localhost:6379        | N/A                          |
+
+## Test Credential
+
+| User          | Email                 | Password                     |
+|---------------|-----------------------|------------------------------|
+| Administrator | admin@mail.com        | password                     |
 
 ## Development Workflow
 
