@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Storage;
 
 class Attachment extends Model
 {
+    public const CACHE_KEY = 'attachment_public_url';
+
     protected $fillable = [
         'filename',
         'path',
@@ -24,10 +26,22 @@ class Attachment extends Model
         'public_url',
     ];
 
+    protected static function booted(): void
+    {
+        static::deleted(function (Attachment $attachment) {
+            Cache::forget($attachment->getCacheKey());
+        });
+    }
+
+    public function getCacheKey(): string
+    {
+        return static::CACHE_KEY.':'.$this->id;
+    }
+
     protected function publicUrl(): Attribute
     {
         return Attribute::get(fn ($value, $attributes) => Cache::remember(
-            'attachment_public_url:'.$attributes['id'],
+            $this->getCacheKey(),
             now()->addWeek(),
             fn () => Storage::disk($attributes['disk'])->url($attributes['path']))
         );

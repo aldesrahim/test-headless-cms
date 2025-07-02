@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Attachment;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -36,7 +37,8 @@ class AttachmentSeeder extends Seeder
         }
 
         foreach ($attachments as $attachment) {
-            Attachment::create($attachment);
+            $stored = Attachment::create($attachment);
+            Cache::forget($stored->getCacheKey());
         }
     }
 
