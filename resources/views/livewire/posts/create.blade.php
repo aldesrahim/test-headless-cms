@@ -83,7 +83,8 @@ new class extends Component {
                     </div>
 
                     @if (isset($state['attachment']))
-                        <p class="text-sm font-medium text-zinc-800 dark:text-zinc-300">You've selected 1 file</p>
+                        <p class="text-sm font-medium text-zinc-800 dark:text-zinc-300">You've selected
+                            {{ count($state['attachment']) }} file(s)</p>
                     @endif
                 </div>
 
